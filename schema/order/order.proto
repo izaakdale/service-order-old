@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package order;
+
+option go_package="github.com/izaakdale/service-order/schema/order";
+
+message OrderRequest {
+    string id = 1;
+}
+
+message Order {
+    string id = 1;
+    repeated Item items = 2;
+    Delivery delivery_details = 3;
+    Meta meta = 4;
+}
+
+message Item {
+    string id = 1;
+    string name = 2;
+    int32 price = 3;
+}
+
+message Delivery {
+    string name = 1;
+    string house = 2;
+    string street = 3;
+    string postcode = 4;
+}
+
+message Meta {
+    string ip_address = 1;
+    string timestamp = 2;
+}
+
+service OrderService {
+    rpc GetOrder(OrderRequest) returns (Order);
+}
