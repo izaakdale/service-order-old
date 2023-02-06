@@ -31,6 +31,30 @@ type OrderRecord struct {
 	PK string `dynamodbav:"PK" json:"-"`
 	SK string `dynamodbav:"SK" json:"-"`
 
-	Meta    any `dynamodbav:"meta" json:"meta,omitempty"`
-	Request any `dynamodbav:"request" json:"request,omitempty"`
+	Items           any    `dynamodbav:"items"`
+	Status          string `dynamodbav:"status"`
+	CreatedAt       int64  `dynamodbav:"created_at"`
+	DeliveryAddress any    `dynamodbav:"delivery_address"`
+}
+
+type ProfileRecord struct {
+	PK string `dynamodbav:"PK" json:"-"`
+	SK string `dynamodbav:"SK" json:"-"`
+
+	Username  string `dynamodbav:"username"`
+	FullName  string `dynamodbav:"full_name"`
+	Email     string `dynamodbav:"email"`
+	CreatedAt int64  `dynamodbav:"created_at"`
+	Addresses any    `dynamodbav:"addresses"`
+}
+
+type Address struct {
+	NameOrNumber string
+	Street       string
+	Postcode     string
+}
+
+type Item struct {
+	ID       string
+	Quantity int32
 }

@@ -3,7 +3,8 @@ package datatore
 import "fmt"
 
 var (
-	orderPKPrefix = "ORDER#"
+	userPrefix  = "USER"
+	orderPrefix = "ORDER"
 
 	metaSK    = "META"
 	requestSK = "REQUEST"
@@ -12,6 +13,6 @@ var (
 	statusDone    = "DONE"
 )
 
-func genPK(prefix, id string) string {
-	return fmt.Sprintf("%s%s", prefix, id)
+func genKey(prefix, id string) string {
+	return fmt.Sprintf("%s#%s", prefix, id)
 }

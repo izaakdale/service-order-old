@@ -2,51 +2,52 @@ package datatore
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
+	"github.com/izaakdale/lib/publisher"
+	"github.com/izaakdale/service-order/schema/event"
 	"github.com/izaakdale/service-order/schema/order"
 )
 
 func Insert(o *order.Order) (string, error) {
 	id := uuid.NewString()
-	pk := genPK(orderPKPrefix, id)
+	log.Printf("handling order: %s", id)
 
-	meta := OrderRecord{
-		PK:   pk,
-		SK:   metaSK,
-		Meta: o.GetMeta(),
-	}
-	request := OrderRecord{
-		PK:      pk,
-		SK:      requestSK,
-		Request: o.Items,
+	rec := OrderRecord{
+		PK: genKey(userPrefix, o.Username),
+		SK: genKey(orderPrefix, id),
+
+		Items:           o.Items,
+		Status:          statusWaiting,
+		CreatedAt:       time.Now().Unix(),
+		DeliveryAddress: o.DeliveryAddress,
 	}
 
-	metaMap, err := attributevalue.MarshalMap(meta)
-	if err != nil {
-		return "", err
-	}
-	requestMap, err := attributevalue.MarshalMap(request)
+	recMap, err := attributevalue.MarshalMap(rec)
 	if err != nil {
 		return "", err
 	}
 
-	_, err = client.BatchWriteItem(context.Background(), &dynamodb.BatchWriteItemInput{
-		RequestItems: map[string][]types.WriteRequest{
-			client.tableName: {
-				{PutRequest: &types.PutRequest{Item: metaMap}},
-				{PutRequest: &types.PutRequest{Item: requestMap}},
-			},
-		},
+	_, err = client.PutItem(context.Background(), &dynamodb.PutItemInput{
+		TableName: &client.tableName,
+		Item:      recMap,
 	})
 	if err != nil {
 		log.Printf("%+v\n", err)
 		return "", err
 	}
+
+	var e = event.OrderCreated{OrderID: id}
+	eBytes, err := json.Marshal(e)
+	if err != nil {
+		return "", err
+	}
+	publisher.Publish(string(eBytes))
 
 	return id, nil
 }
