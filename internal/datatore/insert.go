@@ -42,7 +42,7 @@ func Insert(o *order.Order) (string, error) {
 		return "", err
 	}
 
-	var e = event.OrderCreated{OrderID: id}
+	var e = event.OrderCreated{ID: id}
 	eBytes, err := json.Marshal(e)
 	if err != nil {
 		return "", err
