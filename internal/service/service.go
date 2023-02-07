@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -11,8 +12,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/izaakdale/lib/publisher"
 	"github.com/izaakdale/lib/server"
-	"github.com/izaakdale/service-order/internal/datatore"
+	"github.com/izaakdale/service-order/internal/datastore"
+	"github.com/izaakdale/service-order/schema/order"
 	"github.com/kelseyhightower/envconfig"
+	"google.golang.org/grpc"
 )
 
 type (
@@ -27,8 +30,13 @@ type (
 	}
 
 	Service struct {
-		Name   string
-		Server *http.Server
+		Name       string
+		HttpServer *http.Server
+		GrpcServer *grpc.Server
+	}
+
+	GServer struct {
+		order.OrderServiceServer
 	}
 )
 
@@ -47,7 +55,7 @@ func New(name string) *Service {
 		panic(err)
 	}
 
-	datatore.Init(getAwsDynamoClient(cfg, spec.AWSEndpoint), spec.TableName)
+	datastore.Init(getAwsDynamoClient(cfg, spec.AWSEndpoint), spec.TableName)
 
 	err = publisher.Initialise(cfg, spec.TopicArn, publisher.WithEndpoint(spec.AWSEndpoint))
 	if err != nil {
@@ -63,12 +71,28 @@ func New(name string) *Service {
 		panic(err)
 	}
 
-	return &Service{name, srv}
+	gsrv := grpc.NewServer()
+	ls := &GServer{}
+	order.RegisterOrderServiceServer(gsrv, ls)
+
+	return &Service{name, srv, gsrv}
+}
+
+func (g *GServer) GetOrder(ctx context.Context, o *order.OrderRequest) (*order.Order, error) {
+	log.Printf("grpc order request: %s", o.Id)
+	return &order.Order{
+		Username: "testing testing",
+	}, nil
 }
 
 func (s *Service) Run() {
 	log.Printf("service %s starting up", s.Name)
-	log.Fatal(s.Server.ListenAndServe())
+	lis, err := net.Listen("tcp", "localhost:50051")
+	if err != nil {
+		log.Fatalf("Failed to listen on %v\n", err)
+	}
+	go s.GrpcServer.Serve(lis)
+	log.Fatal(s.HttpServer.ListenAndServe())
 }
 
 // allows use of localstack

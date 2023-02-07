@@ -1,4 +1,4 @@
-package datatore
+package datastore
 
 import "fmt"
 

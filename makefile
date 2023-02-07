@@ -1,5 +1,5 @@
 run_local: 
-	PORT=8080 \
+	PORT=8081 \
 	HOST=localhost \
 	AWS_REGION=eu-west-2 \
 	TABLE_NAME=orders \

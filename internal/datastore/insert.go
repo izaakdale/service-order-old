@@ -1,4 +1,4 @@
-package datatore
+package datastore
 
 import (
 	"context"
@@ -18,7 +18,7 @@ func Insert(o *order.Order) (string, error) {
 	id := uuid.NewString()
 	log.Printf("handling order: %s", id)
 
-	rec := OrderRecord{
+	rec := orderRecord{
 		PK: genKey(userPrefix, o.Username),
 		SK: genKey(orderPrefix, id),
 

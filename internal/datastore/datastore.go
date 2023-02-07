@@ -1,4 +1,4 @@
-package datatore
+package datastore
 
 import (
 	"context"
@@ -13,6 +13,7 @@ type dynamodbIface interface {
 	PutItem(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
 	UpdateItem(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error)
 	Scan(ctx context.Context, params *dynamodb.ScanInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error)
+	GetItem(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error)
 }
 
 type Client struct {
@@ -27,7 +28,7 @@ func Init(db dynamodbIface, tableName string) {
 	}
 }
 
-type OrderRecord struct {
+type orderRecord struct {
 	PK string `dynamodbav:"PK" json:"-"`
 	SK string `dynamodbav:"SK" json:"-"`
 

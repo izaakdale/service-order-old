@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/izaakdale/lib/response"
-	"github.com/izaakdale/service-order/internal/datatore"
+	"github.com/izaakdale/service-order/internal/datastore"
 	"github.com/izaakdale/service-order/schema/order"
 )
 
@@ -17,7 +17,7 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := datatore.Insert(&incoming)
+	id, err := datastore.Insert(&incoming)
 	if err != nil {
 		response.WriteJson(w, http.StatusInternalServerError, err)
 		return
