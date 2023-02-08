@@ -32,31 +32,14 @@ type (
 	productID string
 	quantity  int
 
-	itemsRecord struct {
+	orderRecord struct {
 		PK string `dynamodbav:"PK" json:"-"`
 		SK string `dynamodbav:"SK" json:"-"`
 
-		Items    map[productID]quantity `dynamodbav:"items"`
-		Subtotal *int64                 `dynamodbav:"subtotal"`
-		Tax      *int64                 `dynamodbav:"tax"`
-	}
-	deliveryRecord struct {
-		PK string `dynamodbav:"PK" json:"-"`
-		SK string `dynamodbav:"SK" json:"-"`
+		Items    any `dynamodbav:"items" json:"items"`
+		Delivery any `dynamodbav:"delivery" json:"delivery"`
+		Meta     any `dynamodbav:"meta" json:"meta"`
 
-		Name        *string `dynamodbav:"name"`
-		HouseNumber *string `dynamodbav:"house_number"`
-		Street      *string `dynamodbav:"street"`
-		Postcode    *string `dynamodbav:"postcode"`
-		Phone       *string `dynamodbav:"phone"`
-		Status      *string `dynamodbav:"status"`
-	}
-	metaRecord struct {
-		PK string `dynamodbav:"PK" json:"-"`
-		SK string `dynamodbav:"SK" json:"-"`
-
-		CreatedAt     int64   `dynamodbav:"created_at"`
-		IpAddress     *string `dynamodbav:"ip_address"`
-		PaymentMethod *string `dynamodbav:"payment_method"`
+		Type string `dynamodbav:"type" json:"type"`
 	}
 )

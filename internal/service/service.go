@@ -81,7 +81,6 @@ func New(name string) *Service {
 func (g *GServer) GetOrder(ctx context.Context, o *order.OrderRequest) (*order.Order, error) {
 	log.Printf("grpc order request: %s", o.Id)
 	return &order.Order{
-		Tax: 1,
 		// Username: "testing testing",
 	}, nil
 }

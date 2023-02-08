@@ -10,8 +10,6 @@ message OrderRequest {
 
 message Order {
     repeated Item items = 1;
-    int64 subtotal = 2;
-    int64 tax = 3;
     Delivery delivery_address = 4;
     MetaData metadata = 5;
 }
@@ -19,6 +17,8 @@ message Order {
 message Item {
     string id = 1;
     int32 quantity = 2;
+    int64 subtotal = 3;
+    int64 tax = 4;
 }
 
 message Delivery {

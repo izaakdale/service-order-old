@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -20,46 +19,36 @@ func Insert(o *order.Order) (string, error) {
 	log.Printf("handling order: %s", id)
 	pk := genKey(orderPrefix, id)
 
-	items := make(map[productID]quantity, len(o.Items))
-	for _, v := range o.Items {
-		items[productID(v.Id)] = quantity(v.Quantity)
-	}
-	iRec := itemsRecord{
+	iRec := orderRecord{
 		PK: pk,
 		SK: itemsSK,
 
-		Items:    items,
-		Subtotal: &o.Subtotal,
-		Tax:      &o.Tax,
+		Items: "o.Items",
+		Type:  "items",
 	}
 	recMap, err := attributevalue.MarshalMap(iRec)
 	if err != nil {
 		return "", err
 	}
 
-	mRec := metaRecord{
+	mRec := orderRecord{
 		PK: pk,
 		SK: metaSK,
 
-		CreatedAt:     time.Now().Unix(),
-		IpAddress:     &o.Metadata.IpAddress,
-		PaymentMethod: &o.Metadata.PaymentMethod,
+		Meta: o.Metadata,
+		Type: "meta",
 	}
 	metaMap, err := attributevalue.MarshalMap(mRec)
 	if err != nil {
 		return "", err
 	}
 
-	dRec := deliveryRecord{
+	dRec := orderRecord{
 		PK: pk,
 		SK: deliverySK,
 
-		Name:        &o.DeliveryAddress.Name,
-		HouseNumber: &o.DeliveryAddress.HouseNumber,
-		Street:      &o.DeliveryAddress.Street,
-		Postcode:    &o.DeliveryAddress.Postcode,
-		Phone:       &o.DeliveryAddress.Phone,
-		Status:      &statusReceived,
+		Delivery: o.DeliveryAddress,
+		Type:     "delivery",
 	}
 	deliveryMap, err := attributevalue.MarshalMap(dRec)
 	if err != nil {
