@@ -17,6 +17,11 @@ func createOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if incoming.Metadata == nil || incoming.DeliveryAddress == nil || incoming.Items == nil {
+		response.WriteJson(w, http.StatusBadRequest, err)
+		return
+	}
+
 	id, err := datastore.Insert(&incoming)
 	if err != nil {
 		response.WriteJson(w, http.StatusInternalServerError, err)

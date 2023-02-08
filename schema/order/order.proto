@@ -9,20 +9,29 @@ message OrderRequest {
 }
 
 message Order {
-    string username = 1;
-    repeated Item items = 2;
-    Delivery delivery_address = 3;
+    repeated Item items = 1;
+    int64 subtotal = 2;
+    int64 tax = 3;
+    Delivery delivery_address = 4;
+    MetaData metadata = 5;
 }
 
 message Item {
     string id = 1;
-    int32 price = 3;
+    int32 quantity = 2;
 }
 
 message Delivery {
-    string name_or_number = 1;
+    string name = 1;
+    string houseNumber = 2;
     string street = 3;
     string postcode = 4;
+    string phone = 5;
+}
+
+message MetaData {
+    string ip_address = 1;
+    string payment_method = 2;
 }
 
 service OrderService {

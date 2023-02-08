@@ -3,14 +3,15 @@ package datastore
 import "fmt"
 
 var (
-	userPrefix  = "USER"
 	orderPrefix = "ORDER"
 
-	metaSK    = "META"
-	requestSK = "REQUEST"
+	metaSK     = "META"
+	deliverySK = "DELIVERY"
+	itemsSK    = "ITEMS"
 
-	statusWaiting = "WAITING"
-	statusDone    = "DONE"
+	statusReceived   = "RECEIVED"
+	statusProcessing = "WAITING"
+	statusDone       = "DONE"
 )
 
 func genKey(prefix, id string) string {

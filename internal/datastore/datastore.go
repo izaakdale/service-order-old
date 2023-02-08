@@ -28,34 +28,35 @@ func Init(db dynamodbIface, tableName string) {
 	}
 }
 
-type orderRecord struct {
-	PK string `dynamodbav:"PK" json:"-"`
-	SK string `dynamodbav:"SK" json:"-"`
+type (
+	productID string
+	quantity  int
 
-	Items           any    `dynamodbav:"items"`
-	Status          string `dynamodbav:"status"`
-	CreatedAt       int64  `dynamodbav:"created_at"`
-	DeliveryAddress any    `dynamodbav:"delivery_address"`
-}
+	itemsRecord struct {
+		PK string `dynamodbav:"PK" json:"-"`
+		SK string `dynamodbav:"SK" json:"-"`
 
-type ProfileRecord struct {
-	PK string `dynamodbav:"PK" json:"-"`
-	SK string `dynamodbav:"SK" json:"-"`
+		Items    map[productID]quantity `dynamodbav:"items"`
+		Subtotal *int64                 `dynamodbav:"subtotal"`
+		Tax      *int64                 `dynamodbav:"tax"`
+	}
+	deliveryRecord struct {
+		PK string `dynamodbav:"PK" json:"-"`
+		SK string `dynamodbav:"SK" json:"-"`
 
-	Username  string `dynamodbav:"username"`
-	FullName  string `dynamodbav:"full_name"`
-	Email     string `dynamodbav:"email"`
-	CreatedAt int64  `dynamodbav:"created_at"`
-	Addresses any    `dynamodbav:"addresses"`
-}
+		Name        *string `dynamodbav:"name"`
+		HouseNumber *string `dynamodbav:"house_number"`
+		Street      *string `dynamodbav:"street"`
+		Postcode    *string `dynamodbav:"postcode"`
+		Phone       *string `dynamodbav:"phone"`
+		Status      *string `dynamodbav:"status"`
+	}
+	metaRecord struct {
+		PK string `dynamodbav:"PK" json:"-"`
+		SK string `dynamodbav:"SK" json:"-"`
 
-type Address struct {
-	NameOrNumber string
-	Street       string
-	Postcode     string
-}
-
-type Item struct {
-	ID       string
-	Quantity int32
-}
+		CreatedAt     int64   `dynamodbav:"created_at"`
+		IpAddress     *string `dynamodbav:"ip_address"`
+		PaymentMethod *string `dynamodbav:"payment_method"`
+	}
+)
