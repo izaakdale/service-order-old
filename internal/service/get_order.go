@@ -14,8 +14,10 @@ func getOrder(w http.ResponseWriter, r *http.Request) {
 	params := httprouter.ParamsFromContext(r.Context())
 	id := params.ByName("id")
 
-	_, err := datastore.Fetch(id)
+	order, err := datastore.Fetch(id)
 	if err != nil {
 		response.WriteJson(w, http.StatusInternalServerError, err)
 	}
+
+	response.WriteJson(w, http.StatusOK, order)
 }

@@ -5,9 +5,12 @@ import "fmt"
 var (
 	orderPrefix = "ORDER"
 
-	metaSK     = "META"
-	deliverySK = "DELIVERY"
-	itemsSK    = "ITEMS"
+	metaSK       = "META"
+	metaType     = "meta"
+	deliverySK   = "DELIVERY"
+	deliveryType = "delivery"
+	itemsSK      = "ITEMS"
+	itemsType    = "items"
 
 	statusReceived   = "RECEIVED"
 	statusProcessing = "WAITING"

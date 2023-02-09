@@ -6,6 +6,7 @@ run_local:
 	TOPIC_ARN=arn:aws:sns:eu-west-2:000000000000:order-events \
 	AWS_ENDPOINT=http://localhost:4566 \
 	QUEUE_URL="http://localhost:4566/000000000000/order-queue" \
+	GRPC_PORT="50051" \
 	go run .
 run: 
 	PORT=8080 \

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -18,10 +19,15 @@ import (
 	"google.golang.org/grpc"
 )
 
+var (
+	spec specification
+)
+
 type (
 	specification struct {
 		Host        string `envconfig:"HOST"`
 		Port        string `envconfig:"PORT"`
+		GRPCPort    string `envconfig:"GRPC_PORT"`
 		AwsRegion   string `envconfig:"AWS_REGION" default:"eu-west-2"`
 		TableName   string `envconfig:"TABLE_NAME" required:"true"`
 		AWSEndpoint string `envconfig:"AWS_ENDPOINT"`
@@ -41,7 +47,6 @@ type (
 )
 
 func New(name string) *Service {
-	var spec specification
 	err := envconfig.Process("", &spec)
 	if err != nil {
 		panic(err)
@@ -78,21 +83,23 @@ func New(name string) *Service {
 	return &Service{name, srv, gsrv}
 }
 
-func (g *GServer) GetOrder(ctx context.Context, o *order.OrderRequest) (*order.Order, error) {
-	log.Printf("grpc order request: %s", o.Id)
-	return &order.Order{
-		// Username: "testing testing",
-	}, nil
-}
-
 func (s *Service) Run() {
 	log.Printf("service %s starting up", s.Name)
-	lis, err := net.Listen("tcp", "localhost:50051")
+	go s.RunGRPC()
+	log.Fatal(s.HttpServer.ListenAndServe())
+}
+
+func (s *Service) RunGRPC() {
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", spec.Host, spec.GRPCPort))
 	if err != nil {
 		log.Fatalf("Failed to listen on %v\n", err)
 	}
-	go s.GrpcServer.Serve(lis)
-	log.Fatal(s.HttpServer.ListenAndServe())
+	log.Fatal(s.GrpcServer.Serve(lis))
+}
+
+func (g *GServer) GetOrder(ctx context.Context, o *order.OrderRequest) (*order.Order, error) {
+	log.Printf("grpc order request: %s", o.Id)
+	return datastore.Fetch(o.Id)
 }
 
 // allows use of localstack

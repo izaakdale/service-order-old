@@ -23,8 +23,8 @@ func Insert(o *order.Order) (string, error) {
 		PK: pk,
 		SK: itemsSK,
 
-		Items: "o.Items",
-		Type:  "items",
+		Items: o.Items,
+		Type:  itemsType,
 	}
 	recMap, err := attributevalue.MarshalMap(iRec)
 	if err != nil {
@@ -36,7 +36,7 @@ func Insert(o *order.Order) (string, error) {
 		SK: metaSK,
 
 		Meta: o.Metadata,
-		Type: "meta",
+		Type: metaType,
 	}
 	metaMap, err := attributevalue.MarshalMap(mRec)
 	if err != nil {
@@ -48,7 +48,7 @@ func Insert(o *order.Order) (string, error) {
 		SK: deliverySK,
 
 		Delivery: o.DeliveryAddress,
-		Type:     "delivery",
+		Type:     deliveryType,
 	}
 	deliveryMap, err := attributevalue.MarshalMap(dRec)
 	if err != nil {
