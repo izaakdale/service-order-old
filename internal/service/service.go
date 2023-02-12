@@ -20,6 +20,7 @@ import (
 )
 
 var (
+	name = "service-order"
 	spec specification
 )
 
@@ -46,7 +47,7 @@ type (
 	}
 )
 
-func New(name string) *Service {
+func New() *Service {
 	err := envconfig.Process("", &spec)
 	if err != nil {
 		panic(err)

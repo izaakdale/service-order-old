@@ -2,15 +2,12 @@ package datastore
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
-	"github.com/izaakdale/lib/publisher"
-	"github.com/izaakdale/service-order/schema/event"
 	"github.com/izaakdale/service-order/schema/order"
 )
 
@@ -68,13 +65,6 @@ func Insert(o *order.Order) (string, error) {
 		log.Printf("%+v\n", err)
 		return "", err
 	}
-
-	var e = event.OrderCreated{ID: id}
-	eBytes, err := json.Marshal(e)
-	if err != nil {
-		return "", err
-	}
-	publisher.Publish(string(eBytes))
 
 	return id, nil
 }
